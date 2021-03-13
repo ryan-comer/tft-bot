@@ -4,20 +4,28 @@ import datetime
 
 import time
 class TftBot:
-    def __init__(self):
+    def __init__(self, logging_function=None):
         self.league_client_name = 'League of Legends'
+        self.logging_function=logging_function
+
+    def log(self, log_message):
+        if self.logging_function != None:
+            self.logging_function(log_message)
 
     # Start the bot
     def start(self):
         windows = pygetwindow.getWindowsWithTitle(self.league_client_name)
         if len(windows) == 0:
-            print('No Leauge client found')
+            self.log("No League client found")
         self.league_client_window = windows[0]
-
         self.league_client_window.activate()
-        time.sleep(1)
 
-        self.surrender()
+        time.sleep(1)
+        self.running = True
+        self.start_game()
+
+    def stop(self):
+        self.running = False
 
     # Get the position of the mouse in the particular window
     def get_mouse_in_window(self, window):
@@ -29,10 +37,14 @@ class TftBot:
 
     # Start a game from the play again screen
     def start_game(self):
-        print('Start Game')
+        self.log('Queuing for TFT game')
+
         # Look for the start game button
         result = None
         while result == None:
+            if not self.running:
+                return
+
             result = pyautogui.locateCenterOnScreen('./res/start_game.png', confidence=0.9)
 
         # Move and click the button
@@ -46,10 +58,14 @@ class TftBot:
 
     # Accept the game
     def accept_game(self):
-        print('Accept Game')
+        self.log('Accepting TFT game')
+
         # Find the image
         result = None
         while result == None:
+            if not self.running:
+                return
+
             result = pyautogui.locateCenterOnScreen('./res/accept.png', confidence=0.9)
         
         # Move and click
@@ -62,6 +78,8 @@ class TftBot:
         # Keep checking until the in_queue button goes away
         result = pyautogui.locateCenterOnScreen('./res/in_queue.png', confidence=0.90)
         while result != None:
+            if not self.running:
+                return
             result = pyautogui.locateCenterOnScreen('./res/in_queue.png', confidence=0.90)
 
             # Move and click the accept button again
@@ -74,22 +92,27 @@ class TftBot:
 
     # Wait until 3_2
     def wait_for_surrender(self):
-        print('Wait for surrender')
+        self.log('Waiting for round 3-2')
+
         # Find the 3_2 image
         result = None
         while result == None:
+            if not self.running:
+                return
             result = pyautogui.locateCenterOnScreen('./res/3_2.png', confidence=0.9)
 
         self.surrender()
 
     # Open the surrender menu and surrender
     def surrender(self):
-        print('Surrender')
+        self.log('Surrendering')
 
         # Open surrender menu
         # Find and click on options menu
         result = None
         while result == None:
+            if not self.running:
+                return
             result = pyautogui.locateCenterOnScreen('./res/menu.png', confidence=0.9)
 
         # Move and click
@@ -104,6 +127,8 @@ class TftBot:
         # Find and click on surrender
         result = None
         while result == None:
+            if not self.running:
+                return
             result = pyautogui.locateCenterOnScreen('./res/surrender_1.png', confidence=0.9)
 
         # Move and click
@@ -117,6 +142,8 @@ class TftBot:
         # Find and click on surrender_2
         result = None
         while result == None:
+            if not self.running:
+                return
             result = pyautogui.locateCenterOnScreen('./res/surrender_2.png', confidence=0.9)
 
         # Move and click
@@ -131,11 +158,13 @@ class TftBot:
 
     # Click the button to play again
     def play_again(self):
-        print('Play again')
+        self.log('Playing Again')
 
         # Find and click on surrender
         result = None
         while result == None:
+            if not self.running:
+                return
             result = pyautogui.locateCenterOnScreen('./res/play_again.png', confidence=0.9)
 
         # Move and click

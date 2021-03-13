@@ -1,9 +1,9 @@
-from tft_bot import TftBot
+from bot_ui import BotUI
 
 # Main function
 def main():
-    tft_bot = TftBot()
-    tft_bot.start()
+    bot_ui = BotUI()
+    bot_ui.start()
 
 # Entrypoint
 if __name__ == '__main__':
