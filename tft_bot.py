@@ -2,6 +2,11 @@ import pyautogui
 import pygetwindow
 import datetime
 
+# Account for UI scaling on Windows
+from ctypes import windll
+user32 = windll.user32
+user32.SetProcessDPIAware()
+
 import time
 class TftBot:
     def __init__(self, logging_function=None):
