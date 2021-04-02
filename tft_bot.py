@@ -292,6 +292,9 @@ class TftBot:
         x = size.width * percent_x
         y = size.height * percent_y
 
+        x = int(x)
+        y = int(y)
+
         self.move_mouse(x, y)
 
     def move_mouse(self, x, y):
