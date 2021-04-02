@@ -60,8 +60,7 @@ class TftBot:
         self.start_time = datetime.now()
 
         self.running = True
-        #self.start_game()
-        self.move_mouse(0, 0)
+        self.start_game()
 
     def stop(self):
         self.running = False
