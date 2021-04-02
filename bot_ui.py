@@ -9,8 +9,10 @@ class BotUI:
     def __init__(self):
         self.main_window = tk.Tk()
 
-        self.tft_bot = TftBot(logging_function=self.write_log) # Set up the bot object
+        self.tft_bot = TftBot(logging_function=self.logging_function) # Set up the bot object
         self.bot_thread = None  # Thread used by the bot to perform functions
+
+        self.log_message = None
 
         # Init the components
         self.title = tk.Label(text='TFT Bot')
@@ -40,8 +42,33 @@ class BotUI:
         self.images_check.pack()
         self.stop_images_check.pack()
 
+        self.logging = True
+        self.checking_images = False
+
     def start(self):
+        self.logging_thread = threading.Thread(target=self.logging_worker)
+        self.logging_thread.start()
+
+        self.main_window.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.main_window.mainloop()
+
+    def on_closing(self):
+        self.logging = False
+        self.checking_images = False
+
+        if self.bot_thread != None:
+            self.stop_bot(join=False)
+
+        self.main_window.destroy()
+
+    # Worker function to read what to log and put it in the UI
+    def logging_worker(self):
+        while self.logging:
+            if self.log_message != None:
+                self.write_log(self.log_message)
+                self.log_message = None
+
+            time.sleep(0.5)
 
     def start_bot(self):
         if self.bot_thread != None:
@@ -50,11 +77,12 @@ class BotUI:
         self.bot_thread = threading.Thread(target=self.tft_bot.start)
         self.bot_thread.start()
 
-    def stop_bot(self):
+    def stop_bot(self, join=True):
         self.tft_bot.stop()
 
         if self.bot_thread != None:
-            self.bot_thread.join()
+            if join:
+                self.bot_thread.join()
             self.bot_thread = None
 
         self.write_log('Bot is stopped')
@@ -104,7 +132,10 @@ class BotUI:
             if self.check_images:
                 self.write_image_results()
 
-    # Write
+    # Log function for the bot to use
+    def logging_function(self, message):
+        self.log_message = message
+
     def write_log(self, log_message):
         self.log.configure(state='normal')
         self.log.delete('1.0', tk.END)
