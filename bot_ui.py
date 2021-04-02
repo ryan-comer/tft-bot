@@ -10,6 +10,7 @@ class BotUI:
         self.main_window = tk.Tk()
 
         self.tft_bot = TftBot(logging_function=self.write_log) # Set up the bot object
+        self.bot_thread = None  # Thread used by the bot to perform functions
 
         # Init the components
         self.title = tk.Label(text='TFT Bot')
@@ -22,6 +23,9 @@ class BotUI:
         self.images_check = tk.Button(text='Check Images', width=40, command=self.check_images)
         self.stop_images_check = tk.Button(text='Stop image check', width=40, command=self.stop_check_images)
 
+        # Button for test image
+        self.test_button = tk.Button(text='Test Mouse', width=40, command=self.test_mouse)
+
         self.instructions.insert('end', 'Out of game settings: Window Size - 1280x720, Interface - all scales at 100\n')
         self.instructions.insert('end', 'In game settings: Fullscreen, 1920x1080 resolution\n')
         self.instructions.insert('end', 'Windows Resolution: 1920x1080, Windows UI scaling: 100%\n')
@@ -32,6 +36,7 @@ class BotUI:
         self.log.pack()
         self.start_button.pack()
         self.stop_button.pack()
+        self.test_button.pack()
         self.images_check.pack()
         self.stop_images_check.pack()
 
@@ -39,6 +44,9 @@ class BotUI:
         self.main_window.mainloop()
 
     def start_bot(self):
+        if self.bot_thread != None:
+            self.stop_bot()
+
         self.bot_thread = threading.Thread(target=self.tft_bot.start)
         self.bot_thread.start()
 
@@ -63,6 +71,14 @@ class BotUI:
     def stop_check_images(self):
         self.checking_images = False
         self.write_log('')
+
+    # Start bot testing mouse
+    def test_mouse(self):
+        if self.bot_thread != None:
+            self.stop_bot()
+
+        self.bot_thread = threading.Thread(target=self.tft_bot.test_coords)
+        self.bot_thread.start()
 
     # Worker function to check for images
     def image_check_worker(self):

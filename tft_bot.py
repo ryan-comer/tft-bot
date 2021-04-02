@@ -1,17 +1,17 @@
 import pyautogui
 import pygetwindow
 import datetime
-
-# Account for UI scaling on Windows
 from ctypes import windll
-user32 = windll.user32
-user32.SetProcessDPIAware()
 
 import time
 class TftBot:
     def __init__(self, logging_function=None):
         self.league_client_name = 'League of Legends'
         self.logging_function=logging_function
+
+        # Account for UI scaling on Windows
+        user32 = windll.user32
+        user32.SetProcessDPIAware()
 
     def log(self, log_message):
         if self.logging_function != None:
@@ -26,6 +26,7 @@ class TftBot:
         self.league_client_window.activate()
 
         time.sleep(1)
+
         self.running = True
         self.start_game()
 
@@ -39,6 +40,25 @@ class TftBot:
         x_in_window = mouse_position.x - window_position[0]
         y_in_window = mouse_position.y - window_position[1]
         return (x_in_window, y_in_window)
+
+    # Use the test image to test the screen coordinates of the mouse
+    def test_coords(self):
+        self.running = True
+
+        while True:
+            result = pyautogui.locateCenterOnScreen('./res/test.png', confidence=0.9)
+            log_statement = ""
+
+            if result == None:
+                log_statement = "No test image found"
+            else:
+                mouse_position = pyautogui.position()
+                log_statement = "Test Image: (%d, %d)\tMouse: (%d, %d)" % (result.x, result.y, mouse_position.x, mouse_position.y)
+
+            if self.running:
+                self.log(log_statement)
+            else:
+                return
 
     # Start a game from the play again screen
     def start_game(self):
