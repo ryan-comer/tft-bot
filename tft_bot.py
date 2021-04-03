@@ -143,9 +143,8 @@ class TftBot:
 
             # Move and click the accept button again
             self.move_mouse(image_x, image_y)
-            time.sleep(1)
+            time.sleep(random.random() * 2)
             pyautogui.leftClick()
-            time.sleep(1)
 
         self.wait_for_surrender()
 
@@ -164,13 +163,15 @@ class TftBot:
 
             # Check for buy champion
             test_time = datetime.now()
-            if (test_time - buy_champion_time).total_seconds() > 30:
+            buy_champion_threshold = random.randrange(25, 50)
+            if (test_time - buy_champion_time).total_seconds() >  buy_champion_threshold:
                 self.buy_random_champion()
                 buy_champion_time = datetime.now()
 
             # Check for walk
             test_time = datetime.now()
-            if (test_time - walk_time).total_seconds() > 15:
+            walk_threshold = random.randrange(10, 20)
+            if (test_time - walk_time).total_seconds() > walk_threshold:
                 self.move_character()
                 walk_time = datetime.now()
 
@@ -220,6 +221,10 @@ class TftBot:
             if not self.running:
                 return
             result = pyautogui.locateCenterOnScreen('./res/surrender_2.png', confidence=self.image_confidence)
+
+            pyautogui.mouseDown()
+            time.sleep(random.random() * 2)
+            pyautogui.mouseUp()
 
         # Move and click
         (image_x, image_y) = result
@@ -298,4 +303,5 @@ class TftBot:
         self.move_mouse(x, y)
 
     def move_mouse(self, x, y):
-        self.hc.move((x, y), 1)
+        duration = int((random.random() + 1) * 1.5)
+        self.hc.move((x, y), duration)
