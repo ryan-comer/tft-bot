@@ -8,6 +8,9 @@ import time
 class BotUI:
     def __init__(self):
         self.main_window = tk.Tk()
+        start_stop_frame = tk.Frame(self.main_window, borderwidth=1)
+        debug_buttons_frame = tk.Frame(self.main_window)
+        config_frame = tk.Frame(self.main_window)
 
         self.tft_bot = TftBot(logging_function=self.logging_function) # Set up the bot object
         self.bot_thread = None  # Thread used by the bot to perform functions
@@ -18,15 +21,19 @@ class BotUI:
         self.title = tk.Label(text='TFT Bot')
         self.instructions = tk.Text(height=3)
         self.log = tk.Text(state='disabled')
-        self.start_button = tk.Button(text='Start Bot', width=50, command=self.start_bot)
-        self.stop_button = tk.Button(text='Stop Bot', width=50, command=self.stop_bot)
+        self.start_button = tk.Button(start_stop_frame, text='Start Bot', command=self.start_bot, padx=5, pady=5)
+        self.stop_button = tk.Button(start_stop_frame, text='Stop Bot', command=self.stop_bot, padx=5, pady=5)
+
+        self.checkbox_var = tk.IntVar()
+        self.checkbox = tk.Checkbutton(config_frame, text='Buy champions/Move character', variable=self.checkbox_var, onvalue=1, offvalue=0, command=self.checkbox_checked)
+        self.checkbox.select()
         
         # Buttons for checking images
-        self.images_check = tk.Button(text='Check Images', width=40, command=self.check_images)
-        self.stop_images_check = tk.Button(text='Stop image check', width=40, command=self.stop_check_images)
+        self.images_check = tk.Button(debug_buttons_frame, text='Check Images', command=self.check_images, padx=5, pady=5)
+        self.stop_images_check = tk.Button(debug_buttons_frame, text='Stop image check', command=self.stop_check_images, padx=5, pady=5)
 
-        # Button for test image
-        self.test_button = tk.Button(text='Test Mouse', width=40, command=self.test_mouse)
+        # Button for testing the mouse
+        self.test_button = tk.Button(debug_buttons_frame, text='Test Mouse', command=self.test_mouse, padx=5, pady=5)
 
         self.instructions.insert('end', 'Out of game settings: Window Size - 1280x720, Interface - all scales at 100\n')
         self.instructions.insert('end', 'In game settings: Fullscreen, 1920x1080 resolution\n')
@@ -36,11 +43,18 @@ class BotUI:
         self.title.pack()
         self.instructions.pack()
         self.log.pack()
-        self.start_button.pack()
-        self.stop_button.pack()
-        self.test_button.pack()
-        self.images_check.pack()
-        self.stop_images_check.pack()
+
+        self.checkbox.pack(side=tk.LEFT)
+        config_frame.pack()
+        
+        self.start_button.pack(side=tk.LEFT, padx=5, pady=5)
+        self.stop_button.pack(side=tk.LEFT, padx=5, pady=5)
+        start_stop_frame.pack()
+
+        self.test_button.pack(side=tk.LEFT, padx=5, pady=5)
+        self.images_check.pack(side=tk.LEFT, padx=5, pady=5)
+        self.stop_images_check.pack(side=tk.LEFT, padx=5, pady=5)
+        debug_buttons_frame.pack()
 
         self.logging = True
         self.checking_images = False
@@ -131,6 +145,14 @@ class BotUI:
 
             if self.check_images:
                 self.write_image_results()
+
+    # Function executed when the checkbox is checked
+    def checkbox_checked(self):
+        print(self.checkbox_var.get())
+        if(self.checkbox_var.get() == 0):
+            self.tft_bot.should_buy_and_move = False
+        elif(self.checkbox_var.get() == 1):
+            self.tft_bot.should_buy_and_move = True
 
     # Log function for the bot to use
     def logging_function(self, message):

@@ -22,6 +22,8 @@ class TftBot:
 
         self.image_confidence = 0.8
 
+        self.should_buy_and_move = True
+
         self.champion_positions = [
             (0.2995, 0.9148),
             (0.4094, 0.9148),
@@ -161,19 +163,21 @@ class TftBot:
             if not self.running:
                 return
 
-            # Check for buy champion
-            test_time = datetime.now()
-            buy_champion_threshold = random.randrange(25, 50)
-            if (test_time - buy_champion_time).total_seconds() >  buy_champion_threshold:
-                self.buy_random_champion()
-                buy_champion_time = datetime.now()
+            # Bot actions during a game
+            if self.should_buy_and_move:
+                # Check for buy champion
+                test_time = datetime.now()
+                buy_champion_threshold = random.randrange(25, 50)
+                if (test_time - buy_champion_time).total_seconds() >  buy_champion_threshold:
+                    self.buy_random_champion()
+                    buy_champion_time = datetime.now()
 
-            # Check for walk
-            test_time = datetime.now()
-            walk_threshold = random.randrange(10, 20)
-            if (test_time - walk_time).total_seconds() > walk_threshold:
-                self.move_character()
-                walk_time = datetime.now()
+                # Check for walk
+                test_time = datetime.now()
+                walk_threshold = random.randrange(10, 20)
+                if (test_time - walk_time).total_seconds() > walk_threshold:
+                    self.move_character()
+                    walk_time = datetime.now()
 
             result = pyautogui.locateCenterOnScreen('./res/3_2.png', confidence=self.image_confidence)
 
