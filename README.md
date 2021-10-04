@@ -7,7 +7,7 @@ This bot is built using Python 3. Install the Python requirements by running the
 pip install -r ./requirements.txt
 ```
 
-It is recommended that you set up a [Python virtual environment](https://docs.python.org/3/library/venv.html) before running the pip install.
+Currently, using virtual environments is not working with pyinstaller, so you have to install the dependencies in your main environment.
 
 # Building
 To build, run the following in PowerShell:
